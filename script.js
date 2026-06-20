@@ -106,3 +106,19 @@ function estPalindrome(mot) {
 console.log(estPalindrome("kayak")); 
 console.log(estPalindrome("Dakar")); 
 
+console.table(paysAfrique);
+console.log(choisirAuHasard(paysAfrique));
+
+// Moyenne d'une classe
+console.table(dut1info);
+console.log(`La moyenne de la classe est:`, moyenneClasse(dut1info));
+
+// Prix en EURO
+console.log(`Tableau des prix en FCFA:`, prixFCFA); 
+console.log(`Nouveau tableau des prix en EURO:`, prixEURO);
+
+// Les admis
+console.table(admis);
+
+// Les capitales
+console.table(capitales);
