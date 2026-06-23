@@ -1,124 +1,117 @@
-//Vérification du branchement
-console.log("script.js est bien branché !")
-
-// Message de bienvenue 
-const prenom = "Rokhaya";
-console.log("Bonjour " + prenom);
-console.log(`Bonjour ${prenom}, prête à coder ?`);
-
-// Variables et types (infos sur un joueur de jang afrig)
-const pseudo = "Aminata"; 
-let score = 0; 
-const partieFinie = false; 
-console.log(`Joueur : ${pseudo}`);
-console.log(`Score de départ : ${score}`);
-score = score + 5; 
-console.log(`Nouveau score : ${score}`); 
-
-// Mes premières fonctions
-function direBonjour(nom) {
-return `Bonjour ${nom}, bienvenue sur Jàng Afrig !`;
-}
-console.log(direBonjour("Cheikh"));
-console.log(direBonjour("Ndèye"));
-
-function direAuRevoir(nom) {
-    return `A bientôt ${nom} !`;
-}
-console.log(direAuRevoir("Rokhaya"));
-console.log(direAuRevoir("Modou"));
-
-// Les conditions
-function appreciation(note) {
-    if (note >= 16) {
-        return "Très bien";
-    }   else if (note >= 12) {
-        return "Bien";
-    }   else if (note >= 10) {
-        return "Passable";
-    }   else {
-        return "À retravailler";
-    }
-}
-console.log(appreciation(14)); 
-console.log(appreciation(8)); 
-
-function statutMajorite(age) {
-    return age >= 18 ? "majeur" : "mineur";
-}
-console.log(statutMajorite(20)); 
-
-// Utilisation de la boucle for
-const pays = ["Sénégal", "Mali", "Ghana", "Kenya"];
-for (const nom of pays) {
-    console.log(`Pays africain : ${nom}`);
-}
-console.log(`Il y a ${pays.length} pays dans la liste.`);
-
-// Convertisseur en FCFA
-function fcfaVersEuro(montant) {
-    return montant / 656;
-}
-console.log(fcfaVersEuro(10000)); 
-
-// Calcul de la moyenne d'un étudiant
-function moyenne(notes) {
-    let somme = 0;
-    for (const note of notes) {
-        somme = somme + note;
-    }
-    return somme / notes.length;
-}
-const notesAminata = [12, 15, 9, 14];
-console.log(`Moyenne : ${moyenne(notesAminata)}`); 
-
-// Estimation de la majorité
-function estMajeur(age) {
-    return age >= 18;
-}
-console.log(estMajeur(20)); 
-console.log(estMajeur(16)); 
-
-// FizzBuzz "à la sénégalaise"
-function fizzBuzzSenegal() {
-    for (let n = 1; n <= 30; n++) {
-        if (n % 15 === 0) {
-            console.log("Thiéboudienne");
-        }   else if (n % 3 === 0) {
-            console.log("Thié");
-        }   else if (n % 5 === 0) {
-            console.log("Bou");
-        }   else {
-            console.log(n);
+function genererQuestion() {
+    const bonPays = choisirAuHasard(pays);
+    const bonneReponse = bonPays.capitale;
+    const propositions = [bonneReponse];
+    while (propositions.length < 4) {
+        const autre = choisirAuHasard(pays);
+        if (!propositions.includes(autre.capitale)) {
+            propositions.push(autre.capitale);
         }
     }
+return {
+    enonce: `Quelle est la capitale du pays : ${bonPays.nom} ?`,
+    bonneReponse: bonneReponse,
+    propositions: melanger(propositions)
+    };
 }
-fizzBuzzSenegal();
 
-// Palindrome
-function estPalindrome(mot) {
-    let inverse = "";
-    for (const lettre of mot) {
-        inverse = lettre + inverse;
+function genererQuestions(nombre) {
+    const liste = [];
+    for (let i = 0; i < nombre; i++) {
+        liste.push(genererQuestion());
     }
-    return mot === inverse;
+    return liste;
 }
-console.log(estPalindrome("kayak")); 
-console.log(estPalindrome("Dakar")); 
 
-console.table(paysAfrique);
-console.log(choisirAuHasard(paysAfrique));
+// --- On saisit les éléments de la page (une seule fois) ---
+const ecranAccueil = document.querySelector("#accueil");
+const ecranQuiz = document.querySelector("#quiz");
+const ecranResultat = document.querySelector("#resultat");
+const champPseudo = document.querySelector("#pseudo");
+const btnCommencer = document.querySelector("#btn-commencer");
+const btnRejouer = document.querySelector("#btn-rejouer");
+const elProgression = document.querySelector("#progression");
+const elEnonce = document.querySelector("#enonce");
+const elScoreFinal = document.querySelector("#score-final");
+const boutonsReponse = document.querySelectorAll(".reponse"); // 4 boutons
+const feedback = document.getElementById('feedback')
 
-// Moyenne d'une classe
-console.table(dut1info);
-console.log(`La moyenne de la classe est:`, moyenneClasse(dut1info));
+// --- L'état du jeu ---
+let questions = [];
+let indexQuestion = 0;
+let score = 0;
+let erreurs = 0
+let pseudo = "";
 
-// Prix en EURO
-console.log(`Tableau des prix en FCFA:`, prixFCFA); 
-console.log(`Nouveau tableau des prix en EURO:`, prixEURO);
+// --- N'afficher qu'un seul écran ---
+function afficherEcran(ecran) {
+    ecranAccueil.classList.add("cachee");
+    ecranQuiz.classList.add("cachee");
+    ecranResultat.classList.add("cachee");
+    ecran.classList.remove("cachee");
+}
 
-// Les admis
-console.table(admis);
+// --- Afficher la question courante ---
+function afficherQuestion() {
+    const q = questions[indexQuestion];
+    elProgression.textContent = `Question ${indexQuestion + 1} / ${questions.length}`;
+    elEnonce.textContent = q.enonce;
+    // remplir les 4 boutons avec les 4 propositions (i = position du bouton)
+    boutonsReponse.forEach((bouton, i) => {
+    bouton.textContent = q.propositions[i];
+    });
+}
 
-// Les capitales
-console.table(capitales);
+// --- Traiter une réponse cliquée ---
+function repondre(texteChoisi) {
+    const q = questions[indexQuestion];
+    if (texteChoisi === q.bonneReponse) {
+        score = score + 1;
+        feedback.textContent = "Bonne réponse !";
+        
+    } else {
+        erreurs += 1;
+        feedback.textContent = "Raté !";
+    }
+    indexQuestion = indexQuestion + 1;
+    if (indexQuestion < questions.length) {;
+        afficherQuestion(); // question suivante
+        } else {
+        terminerQuiz(); // c'était la dernière
+    }
+}
+
+// --- Fin du quiz ---
+function terminerQuiz() {
+    elScoreFinal.textContent =
+    `Bravo ${pseudo} ! Ton score : ${score} / ${questions.length}, Erreurs : ${erreurs}`;
+    afficherEcran(ecranResultat);
+}
+
+// --- Démarrer une partie ---
+function demarrerQuiz() {
+    pseudo = champPseudo.value;
+    if (pseudo === "") {
+        pseudo = "Joueur";
+    }
+    score = 0;
+    indexQuestion = 0;
+    questions = genererQuestions(10);
+    afficherEcran(ecranQuiz);
+    afficherQuestion();
+}
+
+// Cliquer sur "Mode Capitales" démarre le quiz
+btnCommencer.addEventListener("click", demarrerQuiz);
+
+// Cliquer sur une réponse appelle repondre() avec le texte du bouton
+boutonsReponse.forEach((bouton) => {
+bouton.addEventListener("click", (event) => {
+repondre(event.target.textContent);
+});
+});
+
+// Cliquer sur "Rejouer" revient à l'accueil
+btnRejouer.addEventListener("click", () => {
+afficherEcran(ecranAccueil);
+});

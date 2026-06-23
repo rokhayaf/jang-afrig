@@ -1,46 +1,29 @@
-// data.js -- les données de Jàng Afrig
-const paysAfrique = [
+const pays = [
     { cca3: "SEN", nom: "Sénégal", capitale: "Dakar" },
     { cca3: "MLI", nom: "Mali", capitale: "Bamako" },
     { cca3: "GHA", nom: "Ghana", capitale: "Accra" },
     { cca3: "KEN", nom: "Kenya", capitale: "Nairobi" },
-    { cca3: "MAR", nom: "Maroc", capitale: "Rabat" }
+    { cca3: "MAR", nom: "Maroc", capitale: "Rabat" },
+    { cca3: "NGA", nom: "Nigéria", capitale: "Abuja" },
+    { cca3: "EGY", nom: "Égypte", capitale: "Le Caire" },
+    { cca3: "CIV", nom: "Côte d'Ivoire", capitale: "Yamoussoukro" },
+    { cca3: "TUN", nom: "Tunisie", capitale: "Tunis" },
+    { cca3: "ETH", nom: "Éthiopie", capitale: "Addis-Abeba" }
 ];
+
 function choisirAuHasard(tableau) {
     const index = Math.floor(Math.random() * tableau.length);
     return tableau[index];
 }
 
-// Moyenne d'une classe
-const dut1info = [
-    { nom: "Rokhaya", note: 20 },
-    { nom: "Aminata", note: 16 },
-    { nom: "Fadel", note: 10 },
-    { nom: "Oumou", note: 19 },
-    { nom: "Fatima", note: 13 },
-    { nom: "Malick", note: 7 },
-    { nom: "Diarra", note: 4 },
-    { nom: "Elimane", note: 17 },
-    { nom: "Fatou", note: 12 },
-    { nom: "Marie", note: 2 },
-];
-
-function moyenneClasse(tab) {
-    let somme = 0;
-    tab.forEach((e) => {
-        somme += e.note
-    });
-    return somme / tab.length;
+// Mélange un tableau (algorithme classique d'échange)
+function melanger(tableau) {
+    const copie = [...tableau]; // copie du tableau (à prendre tel quel, CM3)
+    for (let i = copie.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = copie[i];
+        copie[i] = copie[j];
+        copie[j] = temp;
+    }
+    return copie;
 }
-
-// Prix en EURO
-const prixFCFA = [1780, 656, 10760];
-const prixEURO = prixFCFA.map((p) => p / 656);
-
-// Les admis
-const admis = dut1info.filter(e => e.note >= 10);
-
-// Les capitales
-const capitales = paysAfrique.map((s) => s.capitale);
-
-
